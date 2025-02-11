@@ -1,0 +1,81 @@
+config:
+  target: "https://petstore.octoperf.com"
+  phases:
+    # Load Test Phase 1: Warm-up
+    # Purpose: Initialize the system and establish baseline performance
+    - duration: 1 # 1 minute
+      arrivalRate: 1 # 1 new virtual user per second
+      name: "Warm up"
+
+    # Load Test Phase 2: Ramp-up
+    # Purpose: Gradually increase load to detect performance degradation points
+    - duration: 3 # 3 minutes
+      arrivalRate: 5 # Starts with 5 users per second
+      rampTo: 10 # Gradually increases to 10 users per second
+      name: "Ramp up load"
+
+    # Load Test Phase 3: Sustained Load
+    # Purpose: Maintain steady load to assess system stability
+    - duration: 5 # 5 minutes
+      arrivalRate: 10 # Constant 10 users per second
+      name: "Sustained load"
+
+    # Stress Test Phase
+    # Purpose: Push system beyond normal operation conditions
+    - duration: 60 # 60 minutes
+      arrivalRate: 10 # 10 users per second baseline
+
+    # Spike Test Phase
+    # Purpose: Sudden burst of users to test system recovery
+    - duration: 30 # 30 minutes
+      arrivalRate: 50 # Spike to 50 users per second
+
+    # Recovery Phase
+    # Purpose: Monitor system recovery after spike
+    - duration: 60 # 60 minutes
+      arrivalRate: 10 # Back to baseline
+
+    # Endurance Test Phase
+    # Purpose: Long-running test to find memory leaks and degradation
+    - duration: 300 # 5 hours
+      arrivalRate: 20 # Moderate constant load
+
+scenarios:
+  - name: "Pet Store User Journey"
+    flow:
+      # Step 1: Homepage Access
+      # Purpose: Verify basic connectivity and homepage response
+      - get:
+          url: "/actions/Catalog.action"
+          expect:
+            - statusCode: 200
+            - contentType: "text/html"
+
+      # Step 2: Category Navigation - Fish
+      # Purpose: Test category filtering functionality
+      - get:
+          url: "/actions/Catalog.action?viewCategory=&categoryId=FISH"
+          expect:
+            - statusCode: 200
+            - hasProperty: "categoryId"
+
+      # Step 3: Product Detail View - Fish
+      # Purpose: Test product detail page loading
+      - get:
+          url: "/actions/Catalog.action?viewProduct=&productId=FI-SW-01"
+          expect:
+            - statusCode: 200
+
+      # Step 4: Category Navigation - Dogs
+      # Purpose: Test different category access
+      - get:
+          url: "/actions/Catalog.action?viewCategory=&categoryId=DOGS"
+          expect:
+            - statusCode: 200
+
+      # Step 5: Product Detail View - Dogs
+      # Purpose: Verify consistent product detail access
+      - get:
+          url: "/actions/Catalog.action?viewProduct=&productId=K9-BD-01"
+          expect:
+            - statusCode: 200
