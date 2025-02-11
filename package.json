@@ -1,0 +1,16 @@
+{
+  "name": "artillery-javascript",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "artillery run tests/scenarios.yml"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "artillery": "^2.0.22",
+    "artillery-plugin-expect": "^2.16.0"
+  }
+}
